@@ -16,6 +16,18 @@ if exist "%~dp0scrcpy-last-ip.txt" (
     set /p LAST_IP=<"%~dp0scrcpy-last-ip.txt"
 )
 
+REM Default to Balanced Quality (H.264, 20Mbps, 2772p) to reduce latency
+set "SCRCPY_ARGS=--video-codec=h264 --video-bit-rate=10M --max-size=2772 --max-fps=144 --audio-buffer=50"
+
+if defined LAST_IP (
+    echo Attempting to connect to last known IP: !LAST_IP!
+    "%~dp0x\app\scrcpy.exe" --tcpip=!LAST_IP! !SCRCPY_ARGS!
+    if !errorlevel! equ 0 exit /b
+    echo.
+    echo [WARNING] Connection to !LAST_IP! failed. Falling back to menu...
+    echo.
+)
+
 echo ==================================================================
 echo Scrcpy Wireless Connection Launcher
 echo ==================================================================
@@ -94,13 +106,13 @@ if defined DEVICE_IP (
     
     echo.
     echo Connecting to !DEVICE_IP!...
-    "%~dp0x\app\scrcpy.exe" --tcpip=!DEVICE_IP!
+    "%~dp0x\app\scrcpy.exe" --tcpip=!DEVICE_IP! !SCRCPY_ARGS!
     goto :CheckError
 )
 
 REM Fallback if IP detection failed
 echo [WARNING] Could not detect IP automatically. Falling back to scrcpy internal detection...
-"%~dp0x\app\scrcpy.exe" --select-usb --tcpip
+"%~dp0x\app\scrcpy.exe" --select-usb --tcpip !SCRCPY_ARGS!
 
 echo.
 echo [DEBUG] Scrcpy finished. Checking for wireless device...
@@ -149,7 +161,7 @@ goto :ConnectIP
 :ConnectIP
 echo.
 echo Connecting to %IP%...
-"%~dp0x\app\scrcpy.exe" --tcpip=%IP%
+"%~dp0x\app\scrcpy.exe" --tcpip=%IP% !SCRCPY_ARGS!
 goto :CheckError
 
 :CheckError
