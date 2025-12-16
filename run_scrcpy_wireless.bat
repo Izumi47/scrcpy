@@ -17,7 +17,18 @@ if exist "%~dp0scrcpy-last-ip.txt" (
 )
 
 REM Default to Balanced Quality (H.264, 20Mbps, 2772p) to reduce latency
-set "SCRCPY_ARGS=--video-codec=h264 --video-bit-rate=10M --max-size=2772 --max-fps=144 --audio-buffer=50"
+set "SCRCPY_ARGS=--video-codec=h264 --render-driver=opengl --video-bit-rate=10M --max-fps=120 --print-fps"
+
+REM Print scrcpy arugments in a nice format
+echo ==================================================================
+echo Scrcpy Wireless Launcher Arguments:
+echo    Video Codec     : H.264
+echo    Video Bit Rate  : 10 Mbps
+echo    Max Size        : 2772p
+echo    Max FPS         : 144
+echo    Audio Buffer    : 50 ms
+echo ==================================================================
+echo.
 
 if defined LAST_IP (
     echo Attempting to connect to last known IP: !LAST_IP!
